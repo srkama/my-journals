@@ -1,0 +1,2 @@
+file:: [How_to_effectively_lead_an_inexperienced_team_of_junior_developers_(7)_1679986658589_0.pdf](../assets/How_to_effectively_lead_an_inexperienced_team_of_junior_developers_(7)_1679986658589_0.pdf)
+file-path:: ../assets/How_to_effectively_lead_an_inexperienced_team_of_junior_developers_(7)_1679986658589_0.pdf
