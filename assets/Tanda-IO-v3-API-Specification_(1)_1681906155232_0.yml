@@ -1,0 +1,5020 @@
+openapi: "3.0.2"
+info:
+  title: Tanda I/O v3 API Specification
+  version: "3.1.0"
+servers:
+  - url: https://api-v3-uat.tanda.africa
+    description: UAT
+    variables:
+      OAuth2BaseUrl:
+        default: identity-uat.tanda.africa
+        enum:
+          - identity-uat.tanda.africa
+  - url: https://api-v3.tanda.africa
+    description: Live
+    variables:
+      OAuth2BaseUrl:
+        default: identity.tanda.africa
+        enum:
+          - identity.tanda.africa
+tags:
+  - name: Getting started
+    description: Getting started API
+  - name: User
+    description: User API
+  - name: New store
+    description: New store API
+  - name: Challenges, PIN & Password
+    description: Challenges, PIN & Password API
+  - name: Store
+    description: Store API
+  - name: Store DFSes, Accounts & Statement
+    description: Store DFSes, Accounts & Statement API
+  - name: Payments
+    description: Payments API
+paths:
+  /identity/v1/countries/{countryId}/devices:
+    post:
+      tags:
+        - "Getting started"
+      operationId: startDeviceVerificationFlow
+      summary: Send device verification OTP
+      description: Send device verification OTP
+      parameters:
+        - $ref: "#/components/parameters/countryId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Device"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Device"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "422":
+          $ref: "#/components/responses/Error422"
+        "500":
+          $ref: "#/components/responses/Error500"
+  /identity/v1/countries/{countryId}/devices/{deviceId}:
+    patch:
+      tags:
+        - "Getting started"
+      operationId: resendOTP
+      summary: Resend device verification OTP
+      description: Resend device verification OTP
+      parameters:
+        - $ref: "#/components/parameters/countryId"
+        - $ref: "#/components/parameters/deviceId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Device"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Device"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Error422"
+        "500":
+          $ref: "#/components/responses/Error500"
+  /identity/v1/countries/{countryId}/devices/{deviceId}/verification:
+    post:
+      tags:
+        - "Getting started"
+      operationId: tryVerifyDevice
+      summary: Verify a device
+      description: Verify a device
+      parameters:
+        - $ref: "#/components/parameters/deviceId"
+        - $ref: "#/components/parameters/countryId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceVerification"
+      responses:
+        "201":
+          description: Verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceCredentials"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "422":
+          $ref: "#/components/responses/Error422"
+        "500":
+          $ref: "#/components/responses/Error500"
+  /kyx/v1/phone-numbers/{e164}/person:
+    post:
+      tags:
+        - "User"
+      operationId: updateOrCreatePersonByPhoneNumber
+      summary: Update/register person by phone number
+      description: Update/register person by phone number
+      parameters:
+        - $ref: "#/components/parameters/e164"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "409":
+          $ref: "#/components/responses/Error409"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - Person:signup
+    get:
+      tags:
+        - "User"
+      operationId: findPersonByPhoneNumber
+      summary: Find person/user by phone number
+      description: Find person/user by phone number
+      parameters:
+        - $ref: "#/components/parameters/phoneNumber"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - Person:signup
+  /kyx/v1/persons/{personId}:
+    get:
+      tags:
+        - "User"
+      operationId: findUserById
+      summary: Find user by ID
+      description: Find user by ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - Person:read
+    patch:
+      tags:
+        - "User"
+      operationId: updateUserById
+      summary: Update user names by ID
+      description: Update user names by ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        "204":
+          description: User updated successfully
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - Person:update
+  /kyx/v1/persons/{personId}/is-store-contact:
+    get:
+      tags:
+        - "New store"
+      operationId: isStoreContactByUserId
+      summary: Check if user is a store owner by user ID
+      description: Check if user is a store owner by user ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IsStoreContact"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - Person:read
+  /kyx/v1/persons/{personId}/documents:
+    post:
+      tags:
+        - "User"
+      operationId: uploadUserDocument
+      summary: Upload user document
+      description: Upload user document
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                type:
+                  type: string
+                  description: Identification document type ID
+                  example: "KE.NationalId"
+                number:
+                  type: string
+                  description: Identification document number
+                  example: "12345678912"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              files:
+                contentType: image/png, image/jpeg, application/pdf
+      responses:
+        "201":
+          description: Upload successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - PersonDocument:write
+    get:
+      tags:
+        - "User"
+      operationId: findDocumentsByUserId
+      summary: Find documents by user ID
+      description: Find documents by user ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - PersonDocument:read
+  /kyx/v1/persons/{personId}/documents/{documentId}:
+    delete:
+      tags:
+        - "User"
+      operationId: deleteUserDocumentById
+      summary: Delete user document by ID
+      description: Delete user document by ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/documentId"
+      responses:
+        "204":
+          description: User document deleted
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - PersonDocument:delete
+  /kyx/v1/persons/{personId}/documents/{documentId}/files:
+    post:
+      tags:
+        - "User"
+      operationId: uploadUserDocumentFile
+      summary: Upload user document file
+      description: Upload user document file
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/documentId"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              files:
+                contentType: image/png, image/jpeg, application/pdf
+      responses:
+        "201":
+          description: User document file uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentFile"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - PersonDocument:write
+    get:
+      tags:
+        - "User"
+      operationId: findFilesByUserDocumentId
+      summary: Find files by user document ID
+      description: Find files by user document ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/documentId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentFile"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - PersonDocument:read
+  /kyx/v1/persons/{personId}/documents/{documentId}/files/{fileId}:
+    get:
+      tags:
+        - "User"
+      operationId: downloadUserDoumentFileById
+      summary: Download user document file by ID
+      description: Download user document file by ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/documentId"
+        - $ref: "#/components/parameters/fileId"
+      responses:
+        "200":
+          description: User document file downloaded
+          content:
+            application/*:
+              schema:
+                type: string
+                format: binary
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - PersonDocument:read
+    patch:
+      tags:
+        - "User"
+      operationId: replacePersonDocumentFileById
+      summary: Replace user document file by ID
+      description: Replace user document file by ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/documentId"
+        - $ref: "#/components/parameters/fileId"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              files:
+                contentType: image/png, image/jpeg
+      responses:
+        "204":
+          description: User document file replaced
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - PersonDocument:update
+    delete:
+      tags:
+        - "User"
+      operationId: deletePersonDocumentFileById
+      summary: Delete user document file by ID
+      description: Delete user document file by ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/documentId"
+        - $ref: "#/components/parameters/fileId"
+      responses:
+        "204":
+          description: User document file deleted
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - PersonDocument:delete
+  /kyx/v1/persons/{personId}/selfie:
+    put:
+      tags:
+        - "User"
+      operationId: uploadUserSelfie
+      summary: Upload user selfie
+      description: Upload user selfie
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                selfie:
+                  type: string
+                  format: binary
+            encoding:
+              files:
+                contentType: image/png, image/jpeg
+      responses:
+        "204":
+          description: User selfie uploaded
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - Selfie:write
+    get:
+      tags:
+        - "User"
+      operationId: downloadUserSelfieByUserId
+      summary: Download user selfie by user ID
+      description: Download user selfie by user ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      responses:
+        "200":
+          description: User selfie downloaded
+          content:
+            application/*:
+              schema:
+                type: string
+                format: binary
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - Selfie:read
+    delete:
+      tags:
+        - "User"
+      operationId: deleteUserSelfieByUserId
+      summary: Delete user selfie by user ID 
+      description: Delete user selfie by user ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      responses:
+        "204":
+          description: User selfie deleted
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - Person:signup
+        - storeContactBearer:
+            - Selfie:delete
+  /kyx/v1/persons/{personId}/new-store:
+    post:
+      tags:
+        - "New store"
+      operationId: createAndAttachStoreToPerson
+      summary: Create and attach a new store to a person
+      description: Create and attach a new store to a person
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewStore"
+      responses:
+        "201":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewStore"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "409":
+          $ref: "#/components/responses/Error409"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+    get:
+      tags:
+        - "New store"
+      operationId: fetchNewStoreByPerson
+      summary: Fetch new store by user ID
+      description: Fetch new store by user ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewStore"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}:
+    patch:
+      tags:
+        - "New store"
+      operationId: updateNewStore
+      summary: Update store name
+      description: Update store name
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewStore"
+      responses:
+        "204":
+          description: No content
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/contact:
+    get:
+      tags:
+        - "New store"
+      operationId: findStoreOwnerByStoreId
+      summary: Find store contact/owner by store ID
+      description: Find store contact/owner by store ID
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/step:
+    put:
+      tags:
+        - "New store"
+      operationId: updateNewStoreStep
+      summary: Update store onboarding step
+      description: Update store onboarding step
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingStepDto"
+      responses:
+        "204":
+          description: No content
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/documents:
+    post:
+      tags:
+        - "New store"
+      operationId: uploadNewStoreDocument
+      summary: Upload document
+      description: Uploads store document
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                type:
+                  type: string
+                  description: Identification document type ID
+                  example: "KE.NationalId"
+                number:
+                  type: string
+                  description: Identification document number
+                  example: "12345678912"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              files:
+                contentType: image/png, image/jpeg, application/pdf
+      responses:
+        "201":
+          description: Store document uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+    get:
+      tags:
+        - "New store"
+      operationId: fetchAllAggregatedStoreDocument
+      summary: Fetch all store documents
+      description: Fetch all store documents
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/documents/{documentId}:
+    delete:
+      tags:
+        - "New store"
+      operationId: deleteNewStoreDocument
+      summary: Delete document
+      description: Deletes an existing store document and all linked files
+      parameters:
+        - $ref: "#/components/parameters/newStoreId"
+        - $ref: "#/components/parameters/documentId"
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/documents/{documentId}/files:
+    parameters:
+      - $ref: "#/components/parameters/personId"
+      - $ref: "#/components/parameters/newStoreId"
+      - $ref: "#/components/parameters/documentId"
+    post:
+      tags:
+        - "New store"
+      operationId: uploadNewStoreDocumentFile
+      summary: Upload document file
+      description: Uploads new store document file
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              files:
+                contentType: image/png, image/jpeg, application/pdf
+      responses:
+        "201":
+          description: Upload successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentFile"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+    get:
+      tags:
+        - "New store"
+      operationId: fetchNewStoreDocumentFiles
+      summary: Fetch all new store document files
+      description: Fetch all new store document files
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentFile"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/documents/{documentId}/files/{fileId}:
+    parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+        - $ref: "#/components/parameters/documentId"
+        - $ref: "#/components/parameters/fileId"
+    get:
+      tags:
+        - "New store"
+      operationId: downloadNewStoreDocumentFile
+      summary: Download store document file
+      description: Downloads an existing store document file
+      parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+        - $ref: "#/components/parameters/documentId"
+        - $ref: "#/components/parameters/fileId"
+      responses:
+        "200":
+          description: Downloaded
+          content:
+            application/*:
+              schema:
+                type: string
+                format: binary
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+    put:
+      tags:
+        - "New store"
+      operationId: replaceNewStoreDocumentFile
+      summary: Replace document file
+      description: Replace new store document file
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file:
+                  type: string
+                  format: binary
+            encoding:
+              files:
+                contentType: image/png, image/jpeg
+      responses:
+        "204":
+          description: No content
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+    delete:
+      tags:
+        - "New store"
+      operationId: deleteNewStoreDocumentFile
+      summary: Delete store document file
+      description: Deletes an existing store document file
+      responses:
+        "204":
+          description: File deleted
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/location/physical:
+    parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+    patch:
+      tags:
+        - "New store"
+      operationId: updateNewStorePhysicalLocation
+      summary: Update store phyical location
+      description: Update store phyical location
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreLocationUpdateDto"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StoreArea"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+    get:
+      tags:
+        - "New store"
+      operationId: fetchNewStorePhysicalLocation
+      summary: Fetch store physical location
+      description: Fetch store physical location
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StoreArea"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/location/geo:
+    put:
+      tags:
+        - "New store"
+      operationId: updateNewStoreGeoLocation
+      summary: Update store GEO location
+      description: Update store phyical location
+      parameters:
+        - $ref: "#/components/parameters/newStoreId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GeoPosition"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeoPosition"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+    get:
+      tags:
+        - "New store"
+      operationId: fetchNewStoreGeoLocation
+      summary: Fetch store GEO location
+      description: Fetch store physical location
+      parameters:
+        - $ref: "#/components/parameters/newStoreId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeoPosition"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /kyx/v1/persons/{personId}/new-stores/{newStoreId}/submissions:
+    parameters:
+        - $ref: "#/components/parameters/personId"
+        - $ref: "#/components/parameters/newStoreId"
+    post:
+      tags:
+        - "New store"
+      operationId: createNewStoreSubmission
+      summary: Submit store application
+      description: Submit store application
+      parameters:
+        - $ref: "#/components/parameters/newStoreId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewSubmissionCreationDto"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewStoreSubmission"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "409":
+          $ref: "#/components/responses/Error409"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeSignupBearer:
+            - NewStore:signup
+  /identity/v1/challenges:
+    get:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: fetchAllSecurityChallenges
+      summary: Fetch security challenges
+      description: Fetch security challenges
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Challenge"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - Challenges:read
+  /identity/v1/pin-changes:
+    post:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: startForgotPINFlow
+      summary: Start forgot PIN flow.
+      description: Start forgot PIN flow.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PinChange"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PinChange"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "500":
+          $ref: "#/components/responses/Error500"
+  /identity/v1/pin-changes/{pinChangeId}/challenges:
+    get:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: fetchAnsweredSecurityChallenges
+      summary: Fetch answered security challenges
+      description: Fetch answered security challenges
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnsweredChallenges"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+  /identity/v1/pin-changes/{pinChangeId}/verified:
+    patch:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: verifyForgotPINFlow
+      summary: Verify forgot PIN flow.
+      description: Verifies the user performing the PIN set/reset by forcing them to submit an OTP.
+      parameters:
+        - $ref: "#/components/parameters/pinChangeId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceVerification"
+      responses:
+        "204":
+          description: No content
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+  /identity/v1/pin-changes/{pinChangeId}/answered:
+    patch:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: answerForgotPINChallenges
+      summary: Answer forgot PIN challenges.
+      description: Answers PIN set/reset security challenges.
+      parameters:
+        - $ref: "#/components/parameters/pinChangeId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChallengeAnswers"
+      responses:
+        "204":
+          description: No content
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+  /identity/v1/pin-changes/{pinChangeId}/service-pin:
+    patch:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: completeForgotPINFlow
+      summary: Complete forgot PIN flow.
+      description: Complete forgot PIN flow by setting the new PIN.
+      parameters:
+        - $ref: "#/components/parameters/pinChangeId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicePinPin"
+      responses:
+        "204":
+          description: No content
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+  /identity/v1/user-info:
+    get:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: fetchUserInfo
+      summary: Get UserInfo
+      description: Get UserInfo
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - Admin
+  /identity/v1/persons/{personId}/service-pin:
+    get:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: fetchServicePIN
+      summary: Fetch service PIN
+      description: Fetch service PIN
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServicePin"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - ServicePIN:read
+    put:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: setServicePIN
+      summary: Set/reset service PIN
+      description: Set/reset service PIN
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicePinPin"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServicePin"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - ServicePIN:write
+    patch:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: updateServicePINStatus
+      summary: Update service PIN status
+      description: Update service PIN status
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicePinStatus"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServicePin"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - ServicePIN:update
+  /identity/v1/persons/{personId}/answered-challenges:
+    get:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: fetchPersonSecurityChallenges
+      summary: Fetch person security challenges
+      description: Fetch person security challenges
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnsweredChallenges"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - AnsweredChallenges:read
+    put:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: setPersonSecurityChallenges
+      summary: Set/reset person security challenges
+      description: Set/reset person security challenges
+      parameters:
+        - $ref: "#/components/parameters/personId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnsweredChallenges"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnsweredChallenges"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - AnsweredChallenges:write
+  /identity/v1/store-user-role-types:
+    get:
+      tags:
+        - "Challenges, PIN & Password"
+      operationId: fetchStoreUserRoleTypes
+      summary: Fetch all StoreUserRoleTypes
+      description: Fetch all StoreUserRoleTypes
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserRoleType"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUserRoleTypes:read
+  /kyx/v1/stores/{storeId}/users:
+    get:
+      tags:
+        - "Store"
+      operationId: getAllStoreUsers
+      summary: Get all store users
+      description: Get all store users
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StoreUserIdAndPerson"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUsers:read
+    post:
+      tags:
+        - "Store"
+      operationId: createStoreUser
+      summary: Creates a new store user
+      description: Creates a new store user
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PersonCreationDto"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreUserIdAndPerson"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUsers:write
+  /kyx/v1/stores/{storeId}/{storeUserId}:
+    patch:
+      tags:
+        - "Store"
+      operationId: updateStoreUserStatus
+      summary: Update store account status
+      description: Update store account status
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/storeUserId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountStatus"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreUserIdAndPerson"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUsers:update
+    get:
+      tags:
+        - "Store"
+      operationId: getOneStoreUser
+      summary: Get one store user
+      description: Get one store user
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/storeUserId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreUserIdAndPerson"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUsers:read
+    delete:
+      tags:
+        - "Store"
+      operationId: deleteStoreUser
+      summary: Delete store user
+      description: Delete store user
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/storeUserId"
+      responses:
+        "204":
+          description: No content
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUsers:delete
+  /identity/v1/stores/{storeId}/users/{storeUserId}/roles:
+    get:
+      tags:
+        - "Store"
+      operationId: getGrantedRolesByStoreUser
+      summary: Get all granted roles to Aggregated store user.
+      description: Get all granted roles to Aggregated store user.
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/storeUserId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AssignedUserRole"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUserRoles:read
+  /identity/v1/stores/{storeId}/users/{storeUserId}/roles/{storeUserRoleTypeId}:
+    put:
+      tags:
+        - "Store"
+      operationId: grantRoleToStoreUser
+      summary: Grant store user role to Aggregated store user.
+      description: Grant store user role to Aggregated store user.
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/storeUserId"
+        - $ref: "#/components/parameters/storeUserRoleTypeId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignedUserRole"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUserRoles:update
+    delete:
+      tags:
+        - "Store"
+      operationId: revokeStoreUserRole
+      summary: Revoke Aggregated store user role.
+      description: Revoke Aggregated store user role.
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/storeUserId"
+        - $ref: "#/components/parameters/storeUserRoleTypeId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignedUserRole"
+      responses:
+        "204":
+          description: Store user role revoked
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreUserRoles:delete
+  /kyx/v1/stores/{storeId}/contact:
+    get:
+      tags:
+        - "Store"
+      operationId: getStoreContactById
+      summary: Fetch contact by store ID
+      description: Fetch contact by store ID
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreContact"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreContact:read
+  /kyx/v1/stores/{storeId}/documents:
+    get:
+      tags:
+        - "Store"
+      operationId: fetchStoreDocuments
+      summary: Fetch all store documents
+      description: Fetch all store documents
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreDocuments:read
+  /kyx/v1/stores/{storeId}/documents/{documentId}/files:
+    get:
+      tags:
+        - "Store"
+      operationId: getStoreDocumentFiles
+      summary: Get document files
+      description: Get document files
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/documentId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/*:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentFile"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreDocuments:read
+  /kyx/v1/stores/{storeId}/documents/{documentId}/files/{fileId}:
+    get:
+      tags:
+        - "Store"
+      operationId: downloadStoreDocumentFile
+      summary: Download store document file
+      description: Downloads an existing store document file
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/documentId"
+        - $ref: "#/components/parameters/fileId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/*:
+              schema:
+                type: string
+                format: binary
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - adminAuthCode:
+            - Admin
+  /kyx/v1/stores/{storeId}/location/physical:
+    get:
+      tags:
+        - "Store"
+      operationId: fetchStorePhysicalLocation
+      summary: Fetch store physical location
+      description: Fetch store physical location
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StoreArea"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreLocation:read
+  /kyx/v1/stores/{storeId}/location/geo:
+    get:
+      tags:
+        - "Store"
+      operationId: fetchStoreGeoLocation
+      summary: Fetch store GEO location
+      description: Fetch store physical location
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeoPosition"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreLocation:read
+  /cps/v1/stores/{storeId}/dfses:
+    get:
+      tags:
+        - "Store DFSes, Accounts & Statement"
+      operationId: fetchStoreDfses
+      summary: Fetch all store products
+      description: Fetches all store products
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StoreDfsStatus"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - StoreDFSes:read
+  /cps/v1/stores/{storeId}/dfses/{dfsId}/quote:
+    get:
+      tags:
+        - "Store DFSes, Accounts & Statement"
+      operationId: generateStoreQuote
+      summary: Generate store quote.
+      description: Generate store quote.
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/dfsId"
+        - name: amt
+          in: query
+          required: false
+          description: Transaction amount. Only required for non-voucher products.
+          schema:
+            type: number
+            format: float
+            default: 0.00
+            example: 200.00
+        - name: qty
+          in: query
+          required: false
+          description: Number of vouchers. This is only required for voucher products.
+          schema:
+            type: number
+            default: 1
+            example: 5
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreQuote"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - Quotes:read
+  /cps/v1/stores/{storeId}/wallets:
+    get:
+      tags:
+        - "Store DFSes, Accounts & Statement"
+      operationId: fetchStoreWallets
+      summary: Fetch all store wallets
+      description: Fetches all store wallets
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WalletCurrencyAndType"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - Wallets:read
+  /cps/v1/stores/{storeId}/wallets/{walletId}/payments:
+    get:
+      tags:
+        - "Store DFSes, Accounts & Statement"
+      operationId: fetchStoreWalletPayments
+      summary: Fetch all store wallet payments
+      description: Fetches all store wallet payments
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/walletId"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/till"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/size"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentPagedList"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - Payments:read
+  /cps/v1/stores/{storeId}/beneficiary-accounts:
+    post:
+      tags:
+        - "Store DFSes, Accounts & Statement"
+      operationId: createStoreBeneficiaryAccount
+      summary: Add a new beneficiary account
+      description: Add a new beneficiary account
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BeneficiaryAccountCreationDto"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BeneficiaryAccount"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - BeneficiaryAccounts:write
+    get:
+      tags:
+        - "Store DFSes, Accounts & Statement"
+      operationId: getAllStoreBeneficiaryAccounts
+      summary: Fetch all store accounts
+      description: Fetch all store accounts
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BeneficiaryAccount"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - BeneficiaryAccounts:read
+  /cps/v1/stores/{storeId}/beneficiary-accounts/{beneficiaryAccountId}:
+    patch:
+      tags:
+        - "Store DFSes, Accounts & Statement"
+      operationId: updateStoreBeneficiaryAccountNumAndName
+      summary: Update beneficiary account number & name
+      description: Update beneficiary account number & name
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/beneficiaryAccountId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BeneficiaryAccountUpdateDto"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BeneficiaryAccount"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - BeneficiaryAccounts:update
+    delete:
+      tags:
+        - "Store DFSes, Accounts & Statement"
+      operationId: deleteStoreBeneficiaryAccount
+      summary: Delete beneficiary account
+      description: Delete beneficiary account
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/beneficiaryAccountId"
+      responses:
+        "204":
+          description: No content
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+      security:
+        - storeContactBearer:
+            - BeneficiaryAccounts:delete
+  /sme/v1/stores/{storeId}/wallets/{walletId}/{vertical}/requests:
+    post:
+      tags:
+        - "Payments"
+      description: Send  (Agent/Merchant) request
+      summary: Send (Agent/Merchant) request
+      operationId: addRequest
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/walletId"
+        - $ref: "#/components/parameters/vertical" 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestapiRequest"
+      responses:
+        "202":
+          $ref: "#/components/responses/RestapiResponse"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Error422"
+        "500":
+          $ref: "#/components/responses/Error500"
+        "503":
+          $ref: "#/components/responses/Error503"
+      security:
+        - storeContactBearer:
+            - Payments:write
+  /sme/v1/stores/{storeId}/wallets/{walletId}/{walletservice}/requests:
+    post:
+      tags:
+        - "Payments"
+      description: Send  (Agent/Merchant) WalletService request
+      summary: Send (Agent/Merchant) WalletService request
+      operationId: addWalletRequest
+      parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/walletId"
+        - $ref: "#/components/parameters/walletservice" 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestapiRequest"
+      responses:
+        "202":
+          $ref: "#/components/responses/RestapiResponse"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Error422"
+        "500":
+          $ref: "#/components/responses/Error500"
+        "503":
+          $ref: "#/components/responses/Error503"
+      security:
+        - storeContactBearer:
+            - Payments:write       
+  /sme/v1/stores/{storeId}/requests/{requestId}:
+    get:    
+       tags:
+         - "Payments"
+       description: Fetch  (Agent/Merchant) request
+       summary: Fetch (Agent/Merchant) request
+       operationId: fetchRequest
+       parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/requestId"
+
+       responses:
+        "200":
+              $ref: "#/components/responses/RequestResponse"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Error422"
+        "500":
+          $ref: "#/components/responses/Error500"
+        "503":
+          $ref: "#/components/responses/Error503"
+       security:
+        - storeContactBearer:
+            - Payments:read
+  /sme/v1/stores/{storeId}/requests/{requestId}/status:
+    get:    
+       tags:
+         - "Payments"
+       description: Check status of a (Agent/Merchant) request
+       summary: Check status of a  (Agent/Merchant) request
+       operationId: fetchRequestStatus
+       parameters:
+        - $ref: "#/components/parameters/storeId"
+        - $ref: "#/components/parameters/requestId"
+       responses:
+        "200":
+          $ref: "#/components/responses/RequestStatusResponse"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Error422"
+        "500":
+          $ref: "#/components/responses/Error500"
+        "503":
+          $ref: "#/components/responses/Error503"
+       security:
+        - storeContactBearer:
+            - Payments:read    
+components:
+  schemas:
+    CredentialsStatus:
+      type: string
+      description: Login Credentials status
+      enum:
+        - Active
+        - Locked
+        - Update
+        - New
+      example: "Active"
+    AccountStatus:
+      type: string
+      enum:
+        - Dormant
+        - FullySuspended
+        - Suspended
+        - Active
+        - New
+        - Archived
+      example: "Active"
+    ErrorSeverity:
+      type: string
+      description: Error severity level
+      enum:
+        - Low
+        - Medium
+        - High
+      example: "Low"
+    ProcessSuccessStatus:
+      type: string
+      description: Payment process / API request success status codes
+      enum:
+        - S000000
+      example: "S000000"
+    ProcessErrorStatus:
+      type: string
+      description: Payment process / API request error status codes
+      enum:
+        - E400000
+        - E400001
+        - E400002
+        - E400003
+        - E400004
+        - E400005
+        - E400006
+        - E400007
+        - E400008
+        - E400009
+        - E400010
+        - E400011
+        - E400012
+        - E401000
+        - E401001
+        - E401002
+        - E401003
+        - E401004
+        - E401005
+        - E401006
+        - E401007
+        - E403000
+        - E404000
+        - E404001
+        - E422001
+        - E422002
+        - E422003
+        - E422004
+        - E422005
+        - E422006
+        - E422007
+        - E422008
+        - E422009
+        - E422010
+        - E422011
+        - E422012
+      example: "E400000"
+    ErrorCategory:
+      type: string
+      description: Error category
+      enum:
+        - Business
+        - System
+        - Compliance
+      example: "Business"
+    RestapiRequest:
+      type: object
+      description: ayment request data sent by a StoreOwner or a StoreEmployee from a particular ChannelType
+      required:
+        - "dfsId"
+        - "request"
+      properties:
+        dfsId:
+          type: string
+          format: uuid
+          description: DFS / Product ID as defined by the walletsv2 API
+          example: 89fe6031-b3ca-4db8-9b59-44818059c1d1
+        request:
+          type: object
+          description: Key-value payment request parameters. The key is the `ParameterName` and the value is the agent input.
+          additionalProperties:
+            type: string
+    RestapiResponse:
+      type: object
+      description: Sales, Withdrawal, Deposit & Lending API response body
+      required:
+        - "requestId"
+        - "status"
+        - "message"
+        - "timestamp"
+      properties:
+        requestId:
+          type: string
+          format: uuid
+          description: Payment request ID
+          example: "c0e71252-0ec1-4a7a-ab95-5f8a5a7bc320"
+        status:
+          $ref: "#/components/schemas/ProcessSuccessStatus"
+        message:
+          type: string
+          description: Status description
+          example: "Request accepted"
+        timestamp:
+          type: string
+          format: date-time
+          description: Payment request timestamp
+          example: "2022-06-08T21:00:00Z"
+    RestapiErrorResponse:
+      type: object
+      description: Response body for all RESTful API errors
+      required:
+        - "status"
+        - "category"
+        - "severity"
+        - "error"
+      properties:
+        status:
+          $ref: "#/components/schemas/ProcessErrorStatus"
+        category:
+          $ref: "#/components/schemas/ErrorCategory"
+        severity:
+          $ref: "#/components/schemas/ErrorSeverity"
+        error:
+          type: string
+          description: Brief error message
+          example: "Bad request"
+        description:
+          type: string
+          description: Detailed error message
+          example: "Bad request"
+    Password:
+      type: object
+      required:
+        - "password"
+      properties:
+        password:
+          type: string
+          pattern: \A\w{8,32}\z
+          description: New user password.
+          example: "MyNewPassword@%$2022"
+    Role:
+      type: string
+      enum:
+        - Admin
+        - HeadOfficeEmployee
+        - HeadOfficeAdmin
+        - StoreOwner
+        - StoreEmployee
+        - TandaPayUser
+        - API
+    ClientId:
+      type: string
+      enum:
+        - StaffDashboard
+        - AgencyDashboard
+    Channel:
+      type: string
+      enum:
+        - Web
+        - Mobile
+    GrantType:
+      type: string
+      enum:
+        - authorisation_code
+        - client_credentials
+        - refresh_token
+    Record:
+      type: object
+      description: A base object for all database models
+      required:
+        - "dateTimeCreated"
+        - "lastModified"
+      properties:
+        datetimeCreated:
+          type: string
+          format: datetime
+          readOnly: true
+          description: Creation Timestamp
+          example: "2022-04-08T12:17:49.636946200Z"
+        lastModified:
+          type: string
+          format: datetime
+          readOnly: true
+          description: Object Update Timestamp
+          example: "2022-04-08T12:17:49.636946200Z"
+    CountryIdAndName:
+      type: object
+      description: Country info
+      required:
+        - "id"
+        - "shortName"
+      allOf:
+        - properties:
+            id:
+              type: string
+              description: 2-letter <a href="https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes">ISO 3166-1 alpha-2</a> country code
+              pattern: \A[A-Z]{2}\z
+              example: "KE"
+            shortName:
+              type: string
+              maxLength: 64
+              description: Short country name
+              example: "Kenya"
+    PersonCreationDto:
+      type: object
+      description: User / person basic details
+      required:
+        - id
+        - firstName
+        - mobileNumber
+      properties:
+        firstName:
+          type: string
+          maxLength: 32
+          description: First name
+          example: "Mwendwa"
+        lastName:
+          type: string
+          maxLength: 32
+          description: Last name
+          example: "Reuben"
+        mobileNumber:
+          type: string
+          pattern: \A\d{6,14}\z
+          description: Mobile number without the calling code
+          example: "700000000"
+    Person:
+      type: object
+      description: User / person basic details
+      required:
+        - id
+        - firstName
+        - lastName
+        - country
+      allOf:
+        - properties:
+            id:
+              type: string
+              format: uuid
+              readOnly: true
+              description: System-generated ID for Person.
+              example: "465aab12-8ce5-4508-96af-444838028950"
+            firstName:
+              type: string
+              maxLength: 32
+              description: First name
+              example: "Mwendwa"
+            lastName:
+              type: string
+              maxLength: 32
+              description: Last name
+              example: "Reuben"
+            country:
+              title: CountryIdAndName
+              readOnly: true
+              allOf:
+                - $ref: "#/components/schemas/CountryIdAndName"
+        - $ref: "#/components/schemas/Record"
+    UserInfoProvider:
+      type: object
+      description: |
+        The Customer/Store/HeadOffice that granted access to user. When id = Tanda and type = Tanda, then the access is said to have been issued 
+        by Tanda (Dukapay Ltd, Tanda Group, Inc or Tanda Agent Ltd) to one of it's staff
+      required:
+        - "id"
+        - "type"
+      properties:
+        id:
+          type: string
+          description: Store/Customer/HeadOffice ID or Tanda
+          example: "Tanda"
+        type:
+          type: string
+          description: Resource owner type
+          enum:
+            - Store
+            - HeadOffice
+            - TandaPayUser
+            - Tanda
+          example: "Tanda"
+    UserInfoIdentity:
+      type: object
+      description: |
+        TandaPayUser/StoreOwner/StoreEmployee/HeadOfficeAdmin/HeadOfficeEmployee/Device/Application data. In OAuth 2.1 terms,
+        this is the `subject`. Identity represents a version of a Person that has been granted access to resources by a resource owner. 
+
+        The resource owner can be a store, head office, or even Tanda (in the case of Tanda staff login).
+      required:
+        - "id"
+        - "role"
+      properties:
+        id:
+          type: string
+          description: Identity ID. Can be a StoreOwner ID, HeadOfficeEmployee ID, e.t.c.
+          example: "465aab12-8ce5-4508-96af-444838028950"
+        role:
+          $ref: "#/components/schemas/Role"
+    UserInfo:
+      type: object
+      description: Logged in user info
+      required:
+        - "person"
+        - "identity"
+        - "provider"
+      properties:
+        person:
+          $ref: "#/components/schemas/Person"
+        identity:
+          $ref: "#/components/schemas/UserInfoIdentity"
+        provider:
+          $ref: "#/components/schemas/UserInfoProvider"
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssignedUserRole"
+    IsStoreContact:
+      type: object
+      description: A DTO that holds the truth value about whether a person is a store owner/contact
+      required:
+        - "isContact"
+      properties:
+        isContact:
+          type: boolean
+          example: true
+    IsStoreUser:
+      type: object
+      description: A DTO that holds the truth value about whether a person is a store user/staff
+      required:
+        - "isStoreUser"
+      properties:
+        isStoreUser:
+          type: boolean
+          example: true
+    PinChange:
+      type: object
+      description: PIN set/reset request sent by an anonymous user.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: id is a system-generated ID assigned to a PIN reset request for identification.
+          example: "465aab12-8ce5-4508-96af-444838028950"
+        mobileNumber:
+          type: string
+          pattern: \A\+\d{9,16}\z
+          writeOnly: true
+          description: User phone number in E.164 format.
+          maxLength: 16
+          example: "+254700000000"
+    MobileNumber:
+      properties:
+        mobileNumber:
+          type: string
+          pattern: \A\d{9,14}\z
+          description: User phone number without the calling code
+          maxLength: 14
+          example: 700000000
+        country:
+          $ref: "#/components/schemas/CountryIdAndName"
+    Device:
+      type: object
+      description: Device
+      required:
+        - "name"
+        - "model"
+        - "os"
+        - "osVersion"
+        - "mobileNumber"
+        - "publicKey"
+      properties:
+        id:
+          type: string
+          description: Device Id
+          format: uuid
+          readOnly: true
+          example: 030a0ae2-b738-11ec-b909-0242ac120002
+        name:
+          type: string
+          description: Device name
+          maxLength: 16
+          example: Ashton-Galaxy
+        model:
+          type: string
+          description: Device model
+          maxLength: 16
+          example: S3
+        maker:
+          type: string
+          description: Device maker
+          maxLength: 16
+          example: Samsung
+        os:
+          type: string
+          description: Device operating system
+          maxLength: 16
+          example: Android
+        osVersion:
+          type: string
+          description: Device operating system version
+          maxLength: 16
+          example: 11
+        imei1:
+          type: string
+          description: Device IMEI number
+          maxLength: 15
+          example: 458920956842062
+        imei2:
+          type: string
+          description: Device IMEI number (dual sim)
+          maxLength: 15
+          example: 458920956842063
+        screenSize:
+          type: string
+          description: Device screen size
+          maxLength: 20
+          example: 412 X 732
+        publicKey:
+          type: string
+          description: Device public key
+          maxLength: 20
+          example:
+        mobileNumber:
+          anyOf:
+            - type: string
+              writeOnly: true
+              pattern: \A\d{9,14}\z
+              description: User phone number without the calling code
+              maxLength: 14
+              example: 700000000
+            - type: object
+              title: MobileNumber
+              readOnly: true
+              allOf:
+                - $ref: "#/components/schemas/MobileNumber"
+    DeviceVerification:
+      type: object
+      description: Device verification
+      properties:
+        otp:
+          type: string
+          description: One time password
+          example: 034562
+          maxLength: 10
+    DeviceCredentials:
+      type: object
+      description: Device Credentials
+      properties:
+        id:
+          type: string
+          description: Device Id
+          format: uuid
+          readOnly: true
+          example: 030a0ae2-b738-11ec-b909-0242ac120002
+        secret:
+          type: string
+          description: Device secret
+          maxLength: 32
+          readOnly: true
+          example: 9H5Wr9gNDGVaDVUVvYUsyNAWxVWRxqQS50JQ96bbg0VZbHfG1yMFSfFcKJLKscZm
+    Resource:
+      type: object
+      description: Resources in the platform
+      allOf:
+        - properties:
+            id:
+              type: string
+              pattern: \A\d{2}\z
+              description: Resource type ID
+              readOnly: true
+              example: "01"
+            name:
+              type: string
+              description: Resource name
+              maxLength: 16
+              readOnly: true
+              example: Store
+        - $ref: "#/components/schemas/Record"
+    ResourceScope:
+      type: object
+      description: Scopes for a given Resource
+      properties:
+        scopes:
+          type: string
+          description: Scope ({Resource}.permission)
+          maxLength: 32
+          readOnly: true
+          example: Store.c
+    Error:
+      required:
+        - message
+        - status
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+          description: A short description of the status code
+          example: "Error"
+    StoreUserRole:
+      type: object
+      description: Store Employee Role
+      properties:
+        id:
+          type: string
+          description: Store employee role ID
+          readOnly: true
+          example: 030a0ae2-b738-11ec-b909-0242ac120004
+        storeEmployeeTypeId:
+          type: string
+          description: Store employee role type ID
+          readOnly: true
+          example: 030a0ae2-b738-11ec-b909-0242ac120334
+        storeUserId:
+          type: string
+          description: Store employee ID
+          readOnly: true
+          example: 030a0ae2-b738-11ec-b909-0242ac121534
+        enabled:
+          type: string
+          description: Role status
+          readOnly: true
+          example: true
+    UserRoleType:
+      type: object
+      description: Role
+      allOf:
+        - $ref: "#/components/schemas/UserRoleTypeIdAndName"
+        - properties:
+            description:
+              type: string
+              description: Description
+              example: Admin role
+        - $ref: "#/components/schemas/Record"
+    Permission:
+      type: object
+      description: Permission
+      allOf:
+        - properties:
+            resourceId:
+              type: string
+              description: resourceId
+              example: 01
+            permissions:
+              type: array
+              description: permissions
+              example: [c, r, u, d]
+    Status:
+      type: object
+      description: Permission
+      properties:
+        enabled:
+          type: string
+          description: Permission status
+          example: false
+    Token:
+      type: object
+      properties:
+        token_type:
+          type: string
+          description: Include token with each request in Authorisation header
+          example: Bearer
+        access_token:
+          type: string
+          description: Access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        expires_in:
+          type: integer
+          description: Access token validity period in seconds
+          example: 3600
+        scope:
+          type: string
+          description: Scope of token
+          example: openid
+    ServicePinPin:
+      type: object
+      description: 4-digit Service PIN
+      required:
+        - "pin"
+      properties:
+        pin:
+          type: string
+          pattern: \A\d{4}\z
+          description: 4-digit service PIN
+          example: "1234"
+    ServicePinStatus:
+      type: object
+      description: Service PIN status
+      required:
+        - "status"
+      properties:
+        status:
+          $ref: "#/components/schemas/CredentialsStatus"
+    ServicePin:
+      type: object
+      description: Service PIN
+      required:
+        - "id"
+        - "pin"
+        - "status"
+        - "expiresAt"
+      allOf:
+        - properties:
+            id:
+              type: string
+              format: uuid
+              description: Person/User ID
+              example: "451b33d4-1df5-42b2-a5a3-397a9ff6c130"
+            pin:
+              type: string
+              description: BCrypt hash for the 4-digit service PIN
+              example: "$2y$10$ZKfSu6IttjfJ3RixgTbpJ.rhTwiRdjXew4txzeR9mEroAX/8Ft0cm"
+            status:
+              $ref: "#/components/schemas/CredentialsStatus"
+            expiresAt:
+              type: string
+              format: datetime
+              readOnly: true
+              description: Service PIN expiry date and time in the format `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`
+              example: "2022-04-08T12:17:49.636Z"
+        - $ref: "#/components/schemas/Record"
+    CredentialsStatusDto:
+      type: object
+      description: Login user/device credentials status
+      required:
+        - "status"
+      properties:
+        status:
+          $ref: "#/components/schemas/CredentialsStatus"
+    UserRoleTypeIdAndName:
+      type: object
+      description: Store employee role type persistence configuration. Contains a list of StoreUserRolePermission
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: string
+          pattern: \A\d{2}\z
+          description: ID
+          example: "01"
+        name:
+          type: string
+          maxLength: 64
+          description: Role type name
+          example: "Store Operator"
+    AssignedUserRole:
+      type: object
+      description: Store employee role persistence configuration.
+      required:
+        - "enabled"
+        - "type"
+      allOf:
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            enabled:
+              type: boolean
+              description: Status to enable or disable assigned employee role
+              example: true
+            type:
+              title: UserRoleTypeIdAndName
+              readOnly: true
+              allOf:
+                - $ref: "#/components/schemas/UserRoleTypeIdAndName"
+    ChallengeIdAndChallenge:
+      type: object
+      description: Challenge is a question asked by the system to the user during password/PIN set/reset flows.
+      required:
+        - "id"
+        - "challenge"
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: id is a system-generated ID assigned to a challenge for identification.
+          example: "465aab12-8ce5-4508-96af-444838028950"
+        challenge:
+          type: string
+          maxLength: 128
+          description: challenge is a question that a user is required to answer during PIN/password
+          example: "What is the name of your pet?"
+    Challenge:
+      type: object
+      description: Challenge is a question asked by the system to the user during password/PIN set/reset flows.
+      required:
+        - "id"
+        - "challenge"
+      allOf:
+        - properties:
+            id:
+              type: string
+              format: uuid
+              readOnly: true
+              description: id is a system-generated ID assigned to a challenge for identification.
+              example: "465aab12-8ce5-4508-96af-444838028950"
+            challenge:
+              type: string
+              maxLength: 128
+              description: challenge is a question that a user is required to answer during PIN/password
+              example: "What is the name of your pet?"
+        - $ref: "#/components/schemas/Record"
+    AnsweredChallenges:
+      type: object
+      description: |
+        AnsweredChallenges} is a set of 2 challenges selected and answered by a user. The user has to answer the 2 
+        challenges everytime they want to reset their PIN/password.
+      required:
+        - "challenge1Id"
+        - "challenge1Answer"
+        - "challenge2Id"
+        - "challenge2Answer"
+        - "challenge1"
+        - "challenge2"
+      allOf:
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            challenge1Id:
+              type: string
+              format: uuid
+              writeOnly: true
+              description: ID of the first security challenge.
+              example: "465aab12-8ce5-4508-96af-444838028950"
+            challenge1Answer:
+              type: string
+              maxLength: 64
+              writeOnly: true
+              description: challenge1Answer is the answer to challenge1.
+              example: "Pet1"
+            challenge2Id:
+              type: string
+              format: uuid
+              writeOnly: true
+              description: ID of the second security challenge.
+              example: "465aab12-8ce5-4508-96af-444838028950"
+            challenge2Answer:
+              type: string
+              maxLength: 64
+              writeOnly: true
+              description: challenge2Answer is the answer to challenge2.
+              example: "Pet1"
+            challenge1:
+              title: ChallengeIdAndChallenge
+              readOnly: true
+              description: challenge1 is the first challenge posed to the user.
+              allOf:
+                - $ref: "#/components/schemas/ChallengeIdAndChallenge"
+            challenge2:
+              title: ChallengeIdAndChallenge
+              readOnly: true
+              description: challenge2 is the second challenge posed to the user.
+              allOf:
+                - $ref: "#/components/schemas/ChallengeIdAndChallenge"
+    ChallengeAnswers:
+      type: object
+      required:
+        - "challenge1Answer"
+        - "challenge2Answer"
+      properties:
+        challenge1Answer:
+          type: string
+          maxLength: 64
+          writeOnly: true
+          description: challenge1Answer is the answer to challenge1.
+          example: "Pet1"
+        challenge2Answer:
+          type: string
+          maxLength: 64
+          writeOnly: true
+          description: challenge2Answer is the answer to challenge2.
+          example: "Pet1"
+    VerificationType:
+      type: string
+      description: Kyc/Kyb verification automation level
+      enum:
+        - Manual
+        - Auto
+      example: "Manual"
+    VerificationStatus:
+      type: string
+      description: Kyc/Kyb verification process/flow/step status
+      enum:
+        - Complete
+        - InProgress
+        - Failed
+        - Pending
+      example: "InProgress"
+    LocationStatus:
+      type: string
+      enum:
+        - Verified
+        - Unverified
+        - Invalid
+        - Missing
+      example: "Unverified"
+    OnboardingStatus:
+      type: string
+      description: User / business account set-up status
+      enum:
+        - Review
+        - Rejected
+        - Editing
+      example: "Review"
+    DocumentStatus:
+      type: string
+      description: Document status
+      enum:
+        - Unclear
+        - Invalid
+        - Verified
+        - Unverified
+    SubmissionStatus:
+      type: string
+      description: Application review request status
+      enum:
+        - Review
+        - Approved
+        - Rejected
+      example: "Review"
+    DocumentFileSide:
+      type: string
+      description: Document side
+      enum:
+        - Back
+        - Front
+      example: "Front"
+    OnboardingStep:
+      type: string
+      description: User / business account set-up step
+      enum:
+        - UpdatePerson
+        - ManagePersonDocuments
+        - UpdateHeadOffice
+        - ManageHeadOfficeEmployees
+        - ManageHeadOfficeDocuments
+        - ManageStores
+        - UpdateStore
+        - ManageStoreDocuments
+        - ManageStoreEmployees
+      example: "UpdatePerson"
+    StoreCategory:
+      type: string
+      enum:
+        - Managed
+        - Aggregated
+      example: "Aggregated"
+    VerificationEntity:
+      type: object
+      description: |
+        A group of business or user details that can be verified as one. Kyc is a very fragmented process and making sure 
+        that the process has distinct and quantifiable data groups makes it easy to split the process and even use different 
+        engines or databases to verify each data group.
+      required:
+        - "id"
+        - "name"
+        - "description"
+      properties:
+        id:
+          type: string
+          pattern: \A\w{1,32}\z
+          maxLength: 32
+          description: ID
+          example: "BusinessContactName"
+        name:
+          type: string
+          maxLength: 64
+          description: Name
+          example: "Business contact name"
+        description:
+          type: string
+          maxLength: 256
+          description: More info about the data group
+          example: "Business contact first name and last name"
+    NewStoreVerificationItem:
+      type: object
+      description: A store verification step that groups certain related store properties and verifies them as one
+      required:
+        - "status"
+        - "description"
+        - "ordinal"
+        - "label"
+        - "verificationType"
+        - "entity"
+      allOf:
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            status:
+              $ref: "#/components/schemas/VerificationStatus"
+            description:
+              type: string
+              maxLength: 256
+              description: Verification step description
+              example: "Verify store contact first name and last name"
+            ordinal:
+              type: number
+              format: int
+              maximum: 50
+              description: Verification step number
+              example: 0
+            label:
+              type: string
+              maxLength: 64
+              description: A short step name that can be displayed on mobile devices
+              example: "Business contact name"
+            verificationType:
+              $ref: "#/components/schemas/VerificationType"
+            entity:
+              $ref: "#/components/schemas/VerificationEntity"
+    NewStoreVerificationFlow:
+      type: object
+      required:
+        - "status"
+        - "description"
+        - "items"
+      allOf:
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            status:
+              $ref: "#/components/schemas/VerificationStatus"
+            description:
+              type: string
+              maxLength: 256
+              description: Verification step description
+              example: "Verify store contact first name and last name"
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/NewStoreVerificationItem"
+    TandaTeamMember:
+      type: object
+      description: Tanda team member
+      required:
+        - "status"
+        - "workEmail"
+        - "person"
+        - "workId"
+      allOf:
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            status:
+              readOnly: true
+              title: AccountStatus
+              allOf:
+                - $ref: "#/components/schemas/AccountStatus"
+            message:
+              type: string
+              readOnly: true
+              maxLength: 255
+              description: Account status description
+              example: "Active"
+            workEmail:
+              type: string
+              format: email
+              description: Work email address
+              example: "work@tanda.africa"
+            workId:
+              type: string
+              format: email
+              description: Work Id
+              example: "TA012345"
+            person:
+              $ref: "#/components/schemas/Person"
+    LocationStatusDto:
+      type: object
+      description: Store location status
+      required:
+        - "status"
+      properties:
+        status:
+          $ref: "#/components/schemas/LocationStatus"
+    OnboardingStepDto:
+      type: object
+      description: on-boarding step
+      required:
+        - "step"
+      properties:
+        step:
+          $ref: "#/components/schemas/OnboardingStep"
+    HeadOfficeIdAndName:
+      type: object
+      description: HO id, name and trading name
+      required:
+        - "id"
+        - "name"
+        - "tradingName"
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: ID
+          example: "d84d3542-ee16-4ed0-8535-ed9d287de4fe"
+        name:
+          type: string
+          maxLength: 128
+          description: Registered business name
+          example: "Tanda Agent Ltd"
+        tradingName:
+          type: string
+          maxLength: 32
+          description: Trading name
+          example: "Tanda"
+    NewStoreIdAndName:
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: string
+          readOnly: true
+          format: uuid
+          description: New store ID
+          example: "23562de0-e2ea-423d-91b9-b4cdc92c4409"
+        name:
+          type: string
+          description: Store name
+          maxLength: 128
+          example: "The Garrison Tarven"
+    NewStore:
+      description: Store info
+      required:
+        - "category"
+        - "onboardingStep"
+        - "country"
+        - "headOffice"
+      allOf:
+        - $ref: "#/components/schemas/NewStoreIdAndName"
+        - properties:
+            category:
+              readOnly: true
+              allOf:
+                - $ref: "#/components/schemas/StoreCategory"
+            onboardingStep:
+              readOnly: true
+              allOf:
+                - $ref: "#/components/schemas/OnboardingStep"
+            onboardingStatus:
+              readOnly: true
+              allOf:
+                - $ref: "#/components/schemas/OnboardingStatus"
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            country:
+              title: CountryIdAndName
+              $ref: "#/components/schemas/CountryIdAndName"
+            headOffice:
+              title: HeadOfficeIdAndName
+              $ref: "#/components/schemas/HeadOfficeIdAndName"
+    DocumentFile:
+      type: object
+      description: Uploaded file details
+      required:
+        - "id"
+        - "contentType"
+        - "name"
+        - "side"
+      allOf:
+        - properties:
+            id:
+              type: string
+              readOnly: true
+              description: File ID
+              example: "4a2a2340-bf66-4b3e-a37a-cb6230938ca9"
+            name:
+              type: string
+              description: File name
+              example: "ID_Back.png"
+            contentType:
+              type: string
+              description: Document data content type
+              example: "image/png"
+            side:
+              $ref: "#/components/schemas/DocumentFileSide"
+        - $ref: "#/components/schemas/Record"
+    DocumentTypeIdAndName:
+      type: object
+      description: Document type description with the ID and NAME only
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: string
+          pattern: \A\w{32}\z
+          description: Type ID
+          example: "KE.NationalId"
+        name:
+          type: string
+          maxLength: 64
+          description: Type name
+          example: "National ID"
+    Document:
+      type: object
+      description: ID document
+      required:
+        - "id"
+        - "number"
+        - "verified"
+        - "type"
+      allOf:
+        - properties:
+            id:
+              type: string
+              description: Document ID
+              example: "5f97f10d-3247-4a6a-b54f-c1083212f5ad"
+            status:
+              $ref: "#/components/schemas/DocumentStatus"
+            type:
+              $ref: "#/components/schemas/DocumentTypeIdAndName"
+            files:
+              type: array
+              items:
+                $ref: "#/components/schemas/DocumentFile"
+        - $ref: "#/components/schemas/Record"
+    AreaTypeIdKAndName:
+      type: object
+      description: Container object for area type ID, Key and Name
+      required:
+        - "id"
+        - "k"
+        - "name"
+        - "ordinal"
+      properties:
+        id:
+          type: string
+          pattern: \A\d{3}\z
+          readOnly: true
+          description: System generated area type ID
+          example: "001"
+        k:
+          type: string
+          description: Area type unique key that a developer defineds manually. Helpful when referencing area types using hard-coded IDs
+          maxLength: 32
+          pattern: \A\w{2,32}\z
+          example: "County"
+        name:
+          type: string
+          maxLength: 64
+          description: Type name
+          example: "County"
+        ordinal:
+          type: number
+          description: Area type order number in the hierarchy.
+          example: 0
+    AreaIdNameAndType:
+      type: object
+      description: Container object for ID and Name only
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Area ID
+          example: "a8ad4930-4dc7-4e1d-9997-5989e0be467d"
+        name:
+          type: string
+          maxLength: 128
+          description: Area name
+          example: "Nairobi"
+        type:
+          title: AreaTypeIdKAndName
+          readOnly: true
+          allOf:
+            - $ref: "#/components/schemas/AreaTypeIdKAndName"
+    StoreArea:
+      type: object
+      description: Localtion area and area type
+      required:
+        - ordinal
+        - area
+      allOf:
+        - properties:
+            ordinal:
+              type: number
+              format: int8
+              description: Area type order number in the hierarchy.
+              example: 0
+            area:
+              $ref: "#/components/schemas/AreaIdNameAndType"
+        - $ref: "#/components/schemas/Record"
+    GeoPosition:
+      type: object
+      description: Go latitude and longitude
+      properties:
+        lat:
+          type: number
+          format: float16
+          maximum: 90
+          minimum: -90
+          description: Latitude
+          example: 0.0
+        lng:
+          type: number
+          format: float16
+          maximum: 180
+          minimum: -180
+          description: Longitude
+          example: 0.0
+    StoreLocationUpdateDto:
+      type: object
+      description: An ID for an area to be linked to a store
+      required:
+        - "areaId"
+      properties:
+        areaId:
+          type: string
+          format: uuid
+          description: Area ID
+          example: "e632d748-3d09-4a9e-93f3-911451e59803"
+    NewStoreSubmission:
+      type: object
+      required:
+        - "id"
+        - "status"
+        - "store"
+      allOf:
+        - properties:
+            id:
+              type: string
+              description: ID
+              example: "5f97f10d-3247-4a6a-b54f-c1083212f5ad"
+            status:
+              $ref: "#/components/schemas/SubmissionStatus"
+            message:
+              type: string
+              maxLength: 512
+              example: "Approved"
+            store:
+              $ref: "#/components/schemas/NewStoreIdAndName"
+        - $ref: "#/components/schemas/Record"
+    NewSubmissionCreationDto:
+      type: object
+      description: Application submission remarks
+      properties:
+        message:
+          type: string
+          description: Submission remarks
+          maxLength: 256
+          example: "Kindly check my application"
+    NewSubmissionUpdateDto:
+      type: object
+      description: approval request body
+      allOf:
+        - properties:
+            status:
+              $ref: "#/components/schemas/SubmissionStatus"
+        - $ref: "#/components/schemas/NewSubmissionCreationDto"
+    DocumentUpdateDto:
+      type: object
+      description: Verify doc HTTP request body
+      required:
+        - "verified"
+      properties:
+        verified:
+          type: boolean
+          description: Is the document verified?
+          example: true
+    DocumentStatusDto:
+      type: object
+      description: Document status DTO
+      required:
+        - "reason"
+      properties:
+        status:
+          $ref: "#/components/schemas/DocumentStatus"
+    AbstractStore:
+      type: object
+      description: Store ID, NAME and COUNTRY of operation
+      required:
+        - "id"
+        - "name"
+        - "category"
+      allOf:
+        - properties:
+            id:
+              type: string
+              format: uuid
+              description: ID
+              example: "851b16eb-539b-4820-ad65-8f21adb997f7"
+            name:
+              type: string
+              maxLength: 128
+              description: Name
+              example: "The Garrison Tarven"
+            category:
+              $ref: "#/components/schemas/StoreCategory"
+        - $ref: "#/components/schemas/Record"
+    StoreContact:
+      required:
+        - "id"
+        - "status"
+        - "person"
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID
+          example: "851b16eb-539b-4820-ad65-8f21adb997f7"
+        status:
+          $ref: "#/components/schemas/AccountStatus"
+        message:
+          type: string
+          description: Status description
+          maxLength: 255
+          example: "Active"
+        person:
+          $ref: "#/components/schemas/Person"
+    Store:
+      required:
+        - "number"
+        - "status"
+        - "country"
+        - "headOffice"
+      allOf:
+        - $ref: "#/components/schemas/AbstractStore"
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            status:
+              $ref: "#/components/schemas/AccountStatus"
+            message:
+              type: string
+              description: Status description
+              maxLength: 255
+              example: "Active"
+            number:
+              type: string
+              description: Store number
+              maxLength: 16
+              minLength: 6
+              example: "012345"
+            country:
+              $ref: "#/components/schemas/CountryIdAndName"
+            headOffice:
+              $ref: "#/components/schemas/HeadOfficeIdAndName"
+    AbstractUser:
+      required:
+        - "status"
+      allOf:
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            status:
+              $ref: "#/components/schemas/AccountStatus"
+            message:
+              type: string
+              description: Status description
+              maxLength: 255
+              example: "Active"
+    StoreUserIdAndPerson:
+      description: Store user ID and personal info
+      required:
+        - "id"
+        - "person"
+      allOf:
+        - $ref: "#/components/schemas/AbstractUser"
+        - properties:
+            id:
+              type: string
+              format: uuid
+              readOnly: true
+              description: System-generated ID for Person.
+              example: "465aab12-8ce5-4508-96af-444838028950"
+            person:
+              $ref: "#/components/schemas/Person"
+    StoreUser:
+      description: Store user/employee/staff
+      required:
+        - "store"
+      allOf:
+        - $ref: "#/components/schemas/StoreUserIdAndPerson"
+        - properties:
+            store:
+              $ref: "#/components/schemas/AbstractStore"
+    BeneficiaryAccountStatus:
+      type: string
+      description: Beneficiary account status
+      enum:
+        - Verified
+        - Unverified
+        - Locked
+      example: "Unverified"
+    PropertyKeyClassification:
+      type: string
+      description: |
+        Predefined property classifications.
+
+        These classifications are mostly useful when applying constraints or checking preset details about a configuration
+      enum:
+        - Format
+        - UpperLimit
+        - LowerLimit
+        - Preset
+        - Id
+        - Info
+      example: "UpperLimit"
+    PropertyKeyType:
+      type: string
+      description: |
+        Predefined property types
+
+        These are just data types and only help to validate the payload before persisting and converting the DB attribute to JAVA types and vice versa.
+      enum:
+        - Amount
+        - Number
+        - Timestamp
+        - Date
+        - Time
+        - Pattern
+        - YorN
+        - Url
+        - Msisdn
+        - Email
+        - Uuid
+        - String
+        - Csv
+      example: "Amount"
+    ApplicationMode:
+      type: string
+      description: Defines how the fee affects the top-up value and the net transaction value.
+      enum:
+        - MarkUp
+        - MarkDown
+        - Transaction
+      example: "Transaction"
+    CalculationMode:
+      type: string
+      description: Predefined fee calculation modes
+      enum:
+        - Percentage
+        - Amount
+        - None
+      example: "Amount"
+    FeeTarget:
+      type: string
+      description: Defines the payment parties affected by a particular fee configuration.
+      enum:
+        - Provider
+        - Customer
+      example: "Provider"
+    PaymentClassification:
+      type: string
+      description: Payment category
+      enum:
+        - D
+        - W
+      example: "D"
+    WalletStatus:
+      type: string
+      description: Predefined wallet statuses
+      enum:
+        - Active
+        - Dormant
+        - Suspended
+      example: "Active"
+    DfsWithoutCountry:
+      type: object
+      required:
+        - "type"
+        - "vertical"
+        - "sp"
+      allOf:
+        - properties:
+            id:
+              type: string
+              format: uuid
+              readOnly: true
+              description: product ID
+              example: "8520bcea-67f5-49d0-a5ac-654f0002f0ce"
+            name:
+              type: string
+              maxLength: 64
+              description: product name
+              example: "Safaricom 100"
+            description:
+              type: string
+              maxLength: 255
+              example: "Safaricom 100 Voucher"
+            status:
+              $ref: "#/components/schemas/DfsStatus"
+            type:
+              $ref: "#/components/schemas/DfsTypeIdKAndName"
+            vertical:
+              $ref: "#/components/schemas/VerticalIdAndName"
+            sp:
+              $ref: "#/components/schemas/SpIdKAndName"
+        - $ref: "#/components/schemas/Record"
+    StoreDfsStatus:
+      type: object
+      description: A product definiton targeting a particular store
+      required:
+        - "status"
+        - "dfs"
+      allOf:
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            status:
+              $ref: "#/components/schemas/DfsStatus"
+            dfs:
+              $ref: "#/components/schemas/DfsWithoutCountry"
+    CurrencyIdAndName:
+      type: object
+      description: An easy to reference data about a country's currency.
+      required:
+        - "id"
+        - "symbol"
+        - "name"
+      properties:
+        id:
+          type: string
+          pattern: \A[A-Z]{3}\z
+          description: |
+            In the case of national currencies, the first two letters of the alpha
+            code are the two letters of the {@code  ISO 3166-1 alpha-2} country code 
+            and the third is usually the initial of the currency itself.
+          example: "KES"
+        symbol:
+          type: string
+          maxLength: 8
+          description: Currency symbol that users are used to
+          example: "Ksh"
+        name:
+          type: string
+          maxLength: 64
+          description: Name
+          example: "Kenyan Shilling"
+    WalletIdAndName:
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Wallet ID
+          example: "5536499d-4069-4869-8272-be977dc5770a"
+        name:
+          type: string
+          maxLength: 64
+          readOnly: true
+          description: Wallet name
+          example: "Working"
+    WalletStatusDto:
+      type: object
+      description: wallet status
+      required:
+        - "id"
+        - "status"
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Wallet ID
+          example: "5536499d-4069-4869-8272-be977dc5770a"
+        status:
+          $ref: "#/components/schemas/WalletStatus"
+    WalletTypeIdKAndName:
+      type: object
+      description: Wallet type
+      required:
+        - "id"
+        - "k"
+        - "name"
+      properties:
+        id:
+          type: string
+          pattern: \A\d{2}\z
+          readOnly: true
+          description: ID
+          example: "01"
+        k:
+          type: string
+          pattern: \A\w{2,64}\z
+          maxLength: 64
+          description: Secondary wallet type ID
+          example: "Working"
+        name:
+          type: string
+          maxLength: 64
+          description: Name
+          example: "Working Float"
+    WalletCurrencyAndType:
+      type: object
+      description: Wallet currency and wallet type
+      required:
+        - "actual"
+        - "available"
+        - "currency"
+        - "type"
+      allOf:
+        - $ref: "#/components/schemas/WalletStatusDto"
+        - properties:
+            message:
+              type: string
+              maxLength: 256
+              description: Wallet status description
+              example: "Active"
+            actual:
+              type: number
+              format: float
+              readOnly: true
+              description: Actual wallet balance
+            available:
+              type: number
+              format: float
+              readOnly: true
+              description: Available wallet balance
+            name:
+              type: string
+              maxLength: 64
+              readOnly: true
+              description: Wallet name
+              example: "Working"
+            currency:
+              $ref: "#/components/schemas/CurrencyIdAndName"
+            type:
+              $ref: "#/components/schemas/WalletTypeIdKAndName"
+        - $ref: "#/components/schemas/Record"
+    DfsStatus:
+      type: string
+      description: Product availability status
+      enum:
+        - Available
+        - UnAvailable
+        - ComingSoon
+      example: "ComingSoon"
+    DfsTypeIdKAndName:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: \A\d{3}\z
+          readOnly: true
+          description: ID
+          example: "001"
+        k:
+          type: string
+          pattern: \A\w{2,32}\z
+          maxLength: 32
+          description: Secondary product type ID
+          example: "PrepaidAirtimeVoucher"
+        name:
+          type: string
+          maxLength: 64
+          description: Name
+          example: "Prepaid airtime voucher"
+    VerticalIdAndName:
+      type: object
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: string
+          pattern: \A[A-Z0-9]{2,16}\z
+          description: ID
+          example: "C2B"
+        name:
+          type: string
+          maxLength: 64
+          description: Name
+          example: "Merchant collection"
+    SpIdKAndName:
+      type: object
+      required:
+        - "id"
+        - "k"
+        - "tradingName"
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: ID
+          example: "d9783dfe-df47-44af-a1bd-14a7cfee592a"
+        k:
+          type: string
+          pattern: \A\w{2,24}\z
+          maxLength: 24
+          description: Secondary service provider ID
+          example: "Tanda"
+        tradingName:
+          type: string
+          maxLength: 32
+          description: Trading name
+          example: "Tanda"
+    BeneficiaryAccountUpdateDto:
+      type: object
+      description: A preconfigured bank/mobile money/business account that a Store can use for deposits or withdrawals
+      required:
+        - "number"
+        - "name"
+      properties:
+        number:
+          type: string
+          pattern: \A\w{2,32}\z
+          maxLength: 32
+          description: Account number
+          example: "+254729764597"
+        name:
+          type: string
+          maxLength: 128
+          description: Account name
+          example: "My Account"
+    BeneficiaryAccountStatusDto:
+      type: object
+      description: A preconfigured bank/mobile money/business account that a Store can use for deposits or withdrawals
+      required:
+        - "status"
+      properties:
+        status:
+          $ref: "#/components/schemas/BeneficiaryAccountStatus"
+    BeneficiaryAccountCreationDto:
+      type: object
+      description: A preconfigured bank/mobile money/business account that a Store can use for deposits or withdrawals
+      required:
+        - "spK"
+      allOf:
+        - $ref: "#/components/schemas/BeneficiaryAccountUpdateDto"
+        - properties:
+            spK:
+              type: string
+              maxLength: 32
+              description: Service provider key
+              example: "Mpesa"
+    BeneficiaryAccount:
+      type: object
+      description: A preconfigured bank/mobile money/business account that a Store can use for deposits or withdrawals
+      required:
+        - "id"
+        - "sp"
+      allOf:
+        - properties:
+            id:
+              type: string
+              format: uuid
+              description: account ID
+              example: "851b16eb-539b-4820-ad65-8f21adb997f7"
+        - $ref: "#/components/schemas/BeneficiaryAccountUpdateDto"
+        - $ref: "#/components/schemas/BeneficiaryAccountStatusDto"
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            sp:
+              $ref: "#/components/schemas/SpIdKAndName"
+    QuoteFee:
+      required:
+        - "classification"
+        - "name"
+        - "amount"
+      properties:
+        classification:
+          type: string
+          description: Fee type ID/Key.
+          enum:
+            - Fee
+            - Commission
+            - Promotion
+            - Cashback
+            - Interest
+            - ExciseDuty
+          example: "Fee"
+        name:
+          type: string
+          description: Fee type name.
+          example: "Transaction fee"
+        amount:
+          type: number
+          format: float
+          description: Fee amount.
+          example: 20.00
+    StoreQuote:
+      required:
+        - "id"
+        - "name"
+        - "vertical"
+        - "typeId"
+        - "typeK"
+        - "typeName"
+        - "spId"
+        - "spK"
+        - "spName"
+        - "status"
+        - "minimumTransactionAmount"
+        - "maximumTransactionAmount"
+        - "unitPrice"
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: DFS id.
+          example: "76053690-87ec-4cf6-8996-47ca8fc0caba"
+        name:
+          type: string
+          description: DFS name.
+          example: "Cash-in cash-out"
+        vertical:
+          type: string
+          description: Vertical ID.
+          example: "CICO"
+        typeId:
+          type: string
+          description: DFS type ID.
+          example: "001"
+        typeK:
+          type: string
+          description: DFS type key.
+          example: "Deposit"
+        typeName:
+          type: string
+          description: DFS type name.
+          example: "Deposit"
+        spId:
+          type: string
+          format: uuid
+          description: Service provider ID.
+          example: "76053690-87ec-4cf6-8996-47ca8fc0caba"
+        spK:
+          type: string
+          description: Service provider key.
+          example: "Tanda"
+        spName:
+          type: string
+          description: Service provider name.
+          example: "Tanda"
+        status:
+          $ref: "#/components/schemas/DfsStatus"
+        minimumTransactionAmount:
+          type: number
+          format: float
+          description: DFS minimum transaction value.
+          example: 20.00
+        maximumTransactionAmount:
+          type: number
+          format: float
+          description: DFS maximum transaction value.
+          example: 20.00
+        unitPrice:
+          type: number
+          format: float
+          description: DFS unit price for voucher-based products.
+          example: 20.00
+        storeFees:
+          type: array
+          description: Store fees. Fees in this cotenxt doesn't mean transaction fee but all types of fees.
+          items:
+            $ref: "#/components/schemas/QuoteFee"
+        customerFees:
+          type: array
+          description: Customer fees. Fees in this cotenxt doesn't mean transaction fee but all types of fees.
+          items:
+            $ref: "#/components/schemas/QuoteFee"
+    DfsIdAndName:
+      type: object
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: product ID
+          example: "8520bcea-67f5-49d0-a5ac-654f0002f0ce"
+        name:
+          type: string
+          maxLength: 64
+          description: product name
+          example: "Safaricom 100"
+    PaymentTypeIdAndK:
+      type: object
+      description: Payment / transation type
+      required:
+        - "id"
+        - "k"
+      properties:
+        id:
+          type: string
+          description: Transaction type ID
+          pattern: \Ad{2}}\z
+          example: "01"
+        k:
+          type: string
+          description: Transaction type secondary ID
+          pattern: \A\w{2,32}\z
+          example: "Surcharge"
+    PaymentStatusAndDfs:
+      type: object
+      description: Payment data
+      required:
+        - "id"
+        - "status"
+        - "amount"
+        - "classification"
+        - "dfs"
+        - "type"
+      allOf:
+        - $ref: "#/components/schemas/Record"
+        - properties:
+            id:
+              type: string
+              format: uuid
+              description: Tracking ID
+              example: "1bc1b21b-221c-4d26-a8cc-f7b7c6663189"
+            classification:
+              $ref: "#/components/schemas/PaymentClassification"
+            amount:
+              type: number
+              format: float
+              description: Payment value
+              example: 2000.00
+            status:
+              type: string
+              description: Payment status code
+              format: \A\d{6}\z
+              example: "000000"
+            message:
+              type: string
+              description: Payment status description
+              maxLength: 256
+              example: "Successful"
+            datetimeFulfilled:
+              type: string
+              format: date-time
+              readOnly: true
+              description: Date and time the payment was completed. Format `yyyy-MM-dd'T'HH:mm:ss'Z'`
+              example: "2021-01-10T09:31:43Z"
+            dfs:
+              $ref: "#/components/schemas/DfsIdAndName"
+            type:
+              $ref: "#/components/schemas/PaymentTypeIdAndK"
+            wallet:
+              $ref: "#/components/schemas/WalletIdAndName"
+    RequestStatus:
+      type: object
+      description: Request Status 
+      properties:
+        status:
+           $ref : "#/components/schemas/ProcessErrorStatus"
+        message:
+           type: string
+           example: ""     
+    Request:
+      type: object
+      description: Request result
+      properties:
+        id:
+          type: string
+          format: uuid
+          example:  89fe6031-b3ca-4db8-9b59-44818059c1d1
+        reference:
+          type: string  
+          example: A12SXCDE123
+        status:
+           $ref : "#/components/schemas/ProcessErrorStatus"
+        message:
+           type: string
+           example: "Successfull"    
+        request:
+          additionalProperties:
+            type: string
+        result:
+            additionalProperties:
+              type: string 
+        derived:
+            additionalProperties:
+              type: string         
+        results:
+            type: array
+            items:
+              type: object
+              additionalProperties: 
+                type: string
+    PagedList:
+      required:
+        - page
+      type: object
+      properties:
+        page:
+          required:
+            - number
+            - size
+            - totalElements
+            - totalPages
+          type: object
+          properties:
+            number:
+              type: number
+              description: Page number
+              example: 0
+            size:
+              type: number
+              description: Items/page
+              example: 10
+            totalPages:
+              type: number
+              description: Total no. of pages
+              example: 2
+            totalElements:
+              type: number
+              description: Total no. of elements
+              example: 16
+    PaymentPagedList:
+      type: object
+      description: Paginated list of payments
+      allOf:
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/PaymentStatusAndDfs"
+            query:
+              type: object
+              properties:
+                page:
+                  type: array
+                  description: A list of page variables sent on the previous request
+                  items:
+                    type: number
+                size:
+                  type: array
+                  description: A list of size variables sent on the previous request
+                  items:
+                    type: number
+                till:
+                  type: array
+                  items:
+                    type: string
+                since:
+                  type: array
+                  items:
+                    type: string
+        - $ref: "#/components/schemas/PagedList"
+    NewStoreSubmissionList:
+      type: object
+      description: Paginated list of submissions
+      allOf:
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/NewStoreSubmission"
+            query:
+              type: object
+              properties:
+                page:
+                  type: array
+                  description: A list of page variables sent on the previous request
+                  items:
+                    type: number
+                size:
+                  type: array
+                  description: A list of size variables sent on the previous request
+                  items:
+                    type: number
+        - $ref: "#/components/schemas/PagedList"
+    NewStoreList:
+      type: object
+      description: Paginated list of new stores
+      allOf:
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/NewStore"
+            query:
+              type: object
+              properties:
+                page:
+                  type: array
+                  description: A list of page variables sent on the previous request
+                  items:
+                    type: number
+                size:
+                  type: array
+                  description: A list of size variables sent on the previous request
+                  items:
+                    type: number
+        - $ref: "#/components/schemas/PagedList"
+  parameters:
+    wwwAuthenticate:
+      name: WWW-Authenticate header
+      in: header
+      required: true
+      description: WWW-Authenticate header
+      schema:
+        type: string
+        example: Bearer error="invalid_token", error_description="Bearer token is malformed", error_uri="https://tools.ietf.org/html/rfc6750#section-3.1"
+    requestId:
+        name: requestId
+        in: path
+        required : true
+        description: The id of the request
+        schema: 
+          type:  string
+          format: uuid 
+          example: "4f700049-e092-4b73-aa61-0c545fa0e094"  
+    personId:
+      name: personId
+      in: path
+      required: true
+      description: Person/User ID
+      schema:
+        type: string
+        format: uuid
+        example: "4f700049-e092-4b73-aa61-0c545fa0e094"
+    pinChangeId:
+      name: pinChangeId
+      in: path
+      required: true
+      description: Forgot PIN session/flow ID
+      schema:
+        type: string
+        format: uuid
+        example: "4f700049-e092-4b73-aa61-0c545fa0e094"
+    deviceId:
+      name: deviceId
+      in: path
+      required: true
+      description: Device ID
+      schema:
+        type: string
+        format: uuid
+        example: "4f700049-e092-4b73-aa61-0c545fa0e094"
+    countryId:
+      name: countryId
+      in: path
+      required: true
+      description: Country ID
+      schema:
+        type: string
+        example: "KE"
+    phoneNumber:
+      name: phoneNumber
+      in: path
+      required: true
+      description: Phone number without the country's calling code.
+      schema:
+        type: string
+        example: "700000000"
+    e164:
+      name: e164
+      in: path
+      required: true
+      description: Phone number in the E.164 format.
+      schema:
+        type: string
+        example: "+254700000000"
+    walletservice:
+       name: walletservice
+       in: path
+       required: true
+       description: The Walet service operation of the product the request belongs to
+       schema: 
+          type: string
+          enum: [withdrawals,deposits,internal-transfers]
+    email:
+      name: email
+      in: path
+      required: true
+      description: E-mail address
+      schema:
+        type: string
+        format: email
+        example: "user@example.org"
+    walletId:
+      name: walletId
+      in: path
+      required: true
+      description: Wallet ID
+      schema:
+        type: string
+        format: uuid
+        example: "d9783dfe-df47-44af-a1bd-14a7cfee592a"
+    feeId:
+      name: feeId
+      in: path
+      required: true
+      description: Store DFS fee ID
+      schema:
+        type: string
+        format: uuid
+        example: "d9783dfe-df47-44af-a1bd-14a7cfee592a"
+    vertical:
+       name: vertical
+       in: path
+       required: true
+       description: The vertical/ of the product the request belongs to
+       schema: 
+          type: string
+          enum: [ci,co,c2b,p2p,b2b,vas]
+    dfsId:
+      name: dfsId
+      in: path
+      required: true
+      description: product ID
+      schema:
+        type: string
+        format: uuid
+        example: "d9783dfe-df47-44af-a1bd-14a7cfee592a"
+    dfsPropertyKeyId:
+      name: dfsPropertyKeyId
+      in: path
+      required: true
+      description: DFS property key ID
+      schema:
+        type: string
+        pattern: \A\d{2}\z
+        example: "01"
+    storeId:
+      name: storeId
+      in: path
+      required: true
+      description: Store ID
+      schema:
+        type: string
+        format: uuid
+        example: "4f700049-e092-4b73-aa61-0c545fa0e094"
+    beneficiaryAccountId:
+      name: beneficiaryAccountId
+      in: path
+      required: true
+      description: Store ID
+      schema:
+        type: string
+        format: uuid
+        example: "4f700049-e092-4b73-aa61-0c545fa0e094"
+    storeUserId:
+      name: storeUserId
+      in: path
+      required: true
+      description: Store employee ID
+      schema:
+        type: string
+        format: uuid
+        example: "c4d59ba8-359b-4e6d-b110-6c1a414785cc"
+    storeUserRoleTypeId:
+      name: storeUserRoleTypeId
+      in: path
+      required: true
+      description: Store employee role type ID
+      schema:
+        type: string
+        pattern: \A\d{2}\z
+        example: "01"
+    headOfficeId:
+      name: headOfficeId
+      in: path
+      required: true
+      description: Head office ID
+      schema:
+        type: string
+        format: uuid
+        example: "c4d59ba8-359b-4e6d-b110-6c1a414785cc"
+    headOfficeUserId:
+      name: headOfficeUserId
+      in: path
+      required: true
+      description: Head office employee ID
+      schema:
+        type: string
+        format: uuid
+        example: "c4d59ba8-359b-4e6d-b110-6c1a414785cc"
+    headOfficeUserRoleTypeId:
+      name: headOfficeUserRoleTypeId
+      in: path
+      required: true
+      description: Head office employee role type ID
+      schema:
+        type: string
+        pattern: \A\d{2}\z
+        example: "01"
+    permissionId:
+      name: permissionId
+      in: path
+      required: true
+      description: Permission ID
+      schema:
+        type: string
+        format: uuid
+        example: "c4d59ba8-359b-4e6d-b110-6c1a41478522"
+    responseType:
+      name: response_type
+      in: query
+      required: true
+      description: Selects authorization code flow
+      schema:
+        type: string
+        example: "code"
+    clientId:
+      name: client_id
+      in: query
+      required: true
+      description: Identifies client at the Auth Server
+      schema:
+        $ref: "#/components/schemas/ClientId"
+    scope:
+      name: scope
+      in: query
+      required: true
+      description: Scope of requested token
+      schema:
+        type: string
+        example: "openid"
+    redirectUriAuthorization:
+      name: redirect_uri
+      in: query
+      required: true
+      description: Callback Url to which authorisation params are passed
+      schema:
+        type: string
+        example: "http://127.0.0.1:8080/authorized"
+    redirectUri:
+      name: redirect_uri
+      in: query
+      required: true
+      description: Repeat callback Url in authorize request
+      schema:
+        type: string
+        example: "http://127.0.0.1:8080/authorized"
+    state:
+      name: state
+      in: query
+      required: true
+      description: Encoded application state information to appear at the redirect_uri
+      schema:
+        type: string
+        example: "eteyeyeyeyeyeyeyeyeyey"
+    codeChallenge:
+      name: code_challenge
+      in: query
+      required: true
+      description: Base64 URL encoded SHA 256 hash of code_verifier
+      schema:
+        type: string
+        example: "Z0saWYc5sG4AnXvNMwx98HyaPIqBauljOJ-ivxc6caQ"
+    codeChallengeMethod:
+      name: code_challenge_method
+      in: query
+      required: true
+      description: Encoded application state information to appear at the redirect_uri
+      schema:
+        type: string
+        example: "S256"
+    role:
+      name: role
+      in: query
+      required: true
+      description: Tanda user role
+      schema:
+        $ref: "#/components/schemas/Role"
+    channel:
+      name: channel
+      in: query
+      required: true
+      description: Application access channel
+      schema:
+        $ref: "#/components/schemas/Channel"
+    grantType:
+      name: grant_type
+      in: query
+      required: true
+      description: Application access channel
+      schema:
+        $ref: "#/components/schemas/Channel"
+    authorizationCodeGrantType:
+      name: grant_type
+      in: query
+      required: true
+      description: Authorization code grant type
+      schema:
+        type: string
+        example: authorization_code
+    code:
+      name: code
+      in: query
+      required: true
+      description: Code obtained from authorize response
+      schema:
+        type: string
+        example: -RL3hKdQ3abUqdifTwVNyyuJLfJjp1mr2Apw-5Ft2oED8ajIed4HkkRLd2yFKVqgScQtcxPIH_M-U8gP5k2lu5RLpsZfk1KTsLu0UL4BeNdnRXLCSlqg7qqYjWt2KpiH
+    codeVerifier:
+      name: code_verifier
+      in: query
+      required: true
+      description: Value used to create the code_challenge
+      schema:
+        type: string
+        example: MwendwaReuben232424242
+    newStoreSubmissionId:
+      in: path
+      name: newStoreSubmissionId
+      description: New store application ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: "bc49f3dc-c09d-4fe8-a243-82bfd555a666"
+    documentId:
+      in: path
+      name: documentId
+      description: Document ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: "bc49f3dc-c09d-4fe8-a243-82bfd555a666"
+    fileId:
+      in: path
+      name: fileId
+      description: Document File ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
+        example: "bc49f3dc-c09d-4fe8-a243-82bfd555a666"
+    storeTypeId:
+      name: storeTypeId
+      in: path
+      required: true
+      description: Store type ID
+      schema:
+        type: string
+        example: "001"
+    businessTypeId:
+      name: businessTypeId
+      in: path
+      required: true
+      description: Business type ID
+      schema:
+        type: string
+        example: "01"
+    documentTypeId:
+      name: documentTypeId
+      in: path
+      required: true
+      description: Doc type ID
+      schema:
+        type: string
+        example: "KE.NationalId"
+    hierarchyId:
+      name: hierarchyId
+      in: path
+      required: true
+      description: Country ID
+      schema:
+        type: string
+        example: "KE"
+    areaTypeId:
+      name: areaTypeId
+      in: path
+      required: true
+      description: AreaType ID
+      schema:
+        type: string
+        pattern: \A\d{3}\z
+        example: "001"
+    areaId:
+      name: areaId
+      in: path
+      required: true
+      description: Area ID
+      schema:
+        type: string
+        format: uuid
+        example: "4f700049-e092-4b73-aa61-0c545fa0e094"
+    newStoreId:
+      name: newStoreId
+      in: path
+      required: true
+      description: New store ID
+      schema:
+        type: string
+        format: uuid
+        example: "fda0664f-eb94-4463-86ae-92d8edee2ec2"
+    page:
+      name: page
+      description: Page number (starting from 0). Defaults to zero
+      in: query
+      required: false
+      schema:
+        type: number
+        example: 0
+    size:
+      name: size
+      description: Page size. Defaults to 10
+      in: query
+      required: false
+      schema:
+        type: number
+        example: 10
+    till:
+      name: till
+      description: Latest date and time (UTC timestamp) possible
+      in: query
+      required: true
+      schema:
+        type: string
+        format: date-time
+        example: "2022-01-01T12:00:00Z"
+    since:
+      name: since
+      description: Earliest date and time (UTC timestamp) possible
+      in: query
+      required: true
+      schema:
+        type: string
+        format: date-time
+        example: "2022-01-01T12:00:00Z"
+  responses:
+    RestapiResponse:
+      description: Accepted
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestapiResponse"
+          example:
+            requestId: "c0e71252-0ec1-4a7a-ab95-5f8a5a7bc320"
+            status: "S000000"
+            message: "Request accepted"
+            timestamp: "2022-06-08T21:00:00Z"
+    RequestStatusResponse:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RequestStatus"
+          example:
+            status: "S000000"
+            message: "Request accepted"  
+    RequestResponse:
+        description: Accepted
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Request"
+    Error404:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestapiErrorResponse"
+          example:
+            status: "E404000"
+            category: "System"
+            severity: "Low"
+            error: "Not found"
+            description: "Wallet not found by ID"
+    Error400:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestapiErrorResponse"
+          example:
+            status: "E400000"
+            category: "Business"
+            severity: "Low"
+            error: "Bad request"
+            description: "dfsId: must not be null"
+    Error401:
+      description: Unauthorized
+      headers:
+        WWW-Authenticate:
+          $ref: "#/components/parameters/wwwAuthenticate"
+    Error403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestapiErrorResponse"
+          example:
+            status: "E403000"
+            category: "Business"
+            severity: "Low"
+            error: "Access denied"
+            description: "Access denied"
+    Error409:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestapiErrorResponse"
+          example:
+            status: "E409000"
+            category: "Business"
+            severity: "Low"
+            error: "Duplicate resource found"
+            description: "Duplicate resource found"
+    Error422:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestapiErrorResponse"
+          example:
+            status: "E422001"
+            category: "Compliance"
+            severity: "Medium"
+            error: "Kyb failed. Missing (required) Head Office documents"
+            description: "Kyb failed. Missing (required) Head Office documents"
+    Error500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestapiErrorResponse"
+          example:
+            status: "E500000"
+            category: "System"
+            severity: "High"
+            error: "Internal server error"
+            description: "Internal server error"
+    Error503:
+      description: Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestapiErrorResponse"
+          example:
+            status: "E503000"
+            category: "Business"
+            severity: "Low"
+            error: "Unavailable"
+            description: "Product is unavailable at the moment"
+  securitySchemes:
+    storeContactBearer:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://{environment}/v1/oauth2/authorize
+          tokenUrl: https://{environment}/v1/oauth2/token
+    storeSignupBearer:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://{environment}/v1/oauth2/token          
