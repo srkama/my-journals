@@ -1,5 +1,5 @@
 {:blocks (
-{:block/created-at 1680606963185
+{:block/created-at 1682439063622
 :block/properties 
 {:ls-type :whiteboard-shape
 :logseq.tldraw.shape 
@@ -16,8 +16,8 @@
 :parentId "63343143-c1b8-4d33-a4d2-b9b91d772e96"
 :nonce 1667215502922
 :clipping 0}}
-:block/updated-at 1680606963185} 
-{:block/created-at 1680606963185
+:block/updated-at 1682439063622} 
+{:block/created-at 1682439063622
 :block/properties 
 {:ls-type :whiteboard-shape
 :logseq.tldraw.shape 
@@ -34,8 +34,8 @@
 :parentId "63343143-c1b8-4d33-a4d2-b9b91d772e96"
 :nonce 1667215502231
 :clipping 0}}
-:block/updated-at 1680606963185} 
-{:block/created-at 1680606963185
+:block/updated-at 1682439063622} 
+{:block/created-at 1682439063622
 :block/properties 
 {:ls-type :whiteboard-shape
 :logseq.tldraw.shape 
@@ -65,8 +65,8 @@
 :nonce 1664366268235
 :italic false
 :text "Paste different media types to stimulate your thoughts."}}
-:block/updated-at 1680606963185} 
-{:block/created-at 1680606963185
+:block/updated-at 1682439063622} 
+{:block/created-at 1682439063622
 :block/properties 
 {:ls-type :whiteboard-shape
 :logseq.tldraw.shape 
@@ -96,8 +96,8 @@
 :nonce 1664366321229
 :italic false
 :text "YouTube"}}
-:block/updated-at 1680606963185} 
-{:block/created-at 1680606963185
+:block/updated-at 1682439063622} 
+{:block/created-at 1682439063622
 :block/properties 
 {:ls-type :whiteboard-shape
 :logseq.tldraw.shape 
@@ -127,8 +127,8 @@
 :nonce 1664366321146
 :italic false
 :text "Images & Videos"}}
-:block/updated-at 1680606963185} 
-{:block/created-at 1680606963185
+:block/updated-at 1682439063622} 
+{:block/created-at 1682439063622
 :block/properties 
 {:ls-type :whiteboard-shape
 :logseq.tldraw.shape 
@@ -158,8 +158,8 @@
 :nonce 1664366321386
 :italic false
 :text "Website Embeds"}}
-:block/updated-at 1680606963185} 
-{:block/created-at 1680606963184
+:block/updated-at 1682439063622} 
+{:block/created-at 1682439063622
 :block/properties 
 {:ls-type :whiteboard-shape
 :logseq.tldraw.shape 
@@ -188,8 +188,8 @@
 :nonce 1664366268024
 :italic false
 :text "Add media to the canvas"}}
-:block/updated-at 1680606963184} 
-{:block/created-at 1680606963185
+:block/updated-at 1682439063622} 
+{:block/created-at 1682439063622
 :block/properties 
 {:ls-type :whiteboard-shape
 :logseq.tldraw.shape 
@@ -213,7 +213,7 @@
 :parentId "6423dbe8-718d-4b2d-af55-33df9e6e0bfd"
 :nonce 1680606950120
 :italic false}}
-:block/updated-at 1680606963185})
+:block/updated-at 1682439063622})
 :pages (
 {:block/created-at 1680071656985
 :block/name "6423dbe8-718d-4b2d-af55-33df9e6e0bfd"
@@ -236,5 +236,5 @@
 :size [1050 700]}]
 :shapes-index ("bae63dbf-cdfb-11ed-8f61-1b8b7de06918" "bae63dc3-cdfb-11ed-8f61-1b8b7de06918" "bae63dc4-cdfb-11ed-8f61-1b8b7de06918" "bae63dc5-cdfb-11ed-8f61-1b8b7de06918" "bae63dc6-cdfb-11ed-8f61-1b8b7de06918" "bae664a2-cdfb-11ed-8f61-1b8b7de06918" "bae664b2-cdfb-11ed-8f61-1b8b7de06918" "0e278d50-d2da-11ed-8338-83cacdb620a6")}}
 :block/type "whiteboard"
-:block/updated-at 1680606963184
+:block/updated-at 1682439063622
 :block/uuid #uuid "6423dbe8-718d-4b2d-af55-33df9e6e0bfd"})}
