@@ -13,4 +13,4 @@
 			- build strong sytem design and managerical skills.
 		- ^^Current undesirable traits^^
 			- sleeping a lot, not focusing on the health a lot.
--
+	-
