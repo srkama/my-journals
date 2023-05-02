@@ -13,4 +13,10 @@
 			- build strong sytem design and managerical skills.
 		- ^^Current undesirable traits^^
 			- sleeping a lot, not focusing on the health a lot.
-	-
+	- My Goals
+		- #Personal-Goals
+			- Reduce Weight
+			- Buy a new car
+		- #Professional-Goals
+			- Promote two more people to the new level
+			-
