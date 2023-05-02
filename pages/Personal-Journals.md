@@ -1,0 +1,16 @@
+- [[May 2nd, 2023]]
+	- Feeling low today, not like to go to office and something is missing, there is  original motivation to attend.
+	- I am thinking to discuss with people to understand what should i be doing next.
+	- Even my personal life i feel bad about how things going, not speaking father, and not progressing on thing. I also care about what other doing and envy on their progress or doing things which is impacting my day to day happiness a lot in recent times.
+	- There isn't enough motivation to do the work there is no proper recognition for the works which is done.
+	- New Version of me
+		- ^^Habits and mindset^^
+			- I want to wake early and have positive outlook towards to the life
+			- should not procrastinate things
+		- ^^Fitness and health^^
+			- Should reduce have very healthy life
+		- ^^Knowledge and skills^^
+			- build strong sytem design and managerical skills.
+		- ^^Current undesirable traits^^
+			- sleeping a lot, not focusing on the health a lot.
+-
