@@ -19,4 +19,5 @@
 			- Buy a new car
 		- #Professional-Goals
 			- Promote two more people to the new level
+			- Manage bigger project and deliver better releases
 			-
