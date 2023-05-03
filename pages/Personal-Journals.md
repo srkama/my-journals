@@ -1,6 +1,7 @@
 - [[May 3rd, 2023]]
 	- I was thinking to switch a job but meanwhile, but Tridiv request more towards my growth. can I take this up and pursue further what are the grantees how to grow my career ladder if I have multiple teams under me and managing big chunk of it. should take the #Tridiv propsal or should go with new opportunities.
 	- Whatever the efforts are steps i take in next few months is going to be defining moment in my career i feel. either work full commitment and more forward
+	- I feel bad not taking up any steps towards my personal goal.
 	-
 - [[May 2nd, 2023]]
   collapsed:: true
