@@ -1,4 +1,8 @@
+-
+- [[May 3rd, 2023]]
+	- I am worried bit more
 - [[May 2nd, 2023]]
+  collapsed:: true
 	- Feeling low today, not like to go to office and something is missing, there is  original motivation to attend.
 	- I am thinking to discuss with people to understand what should i be doing next.
 	- Even my personal life i feel bad about how things going, not speaking father, and not progressing on thing. I also care about what other doing and envy on their progress or doing things which is impacting my day to day happiness a lot in recent times.
