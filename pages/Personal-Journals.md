@@ -1,6 +1,5 @@
--
 - [[May 3rd, 2023]]
-	- I am worried bit more
+	- I was thinking to switch a job but meanwhile, but tridiv request more towards
 - [[May 2nd, 2023]]
   collapsed:: true
 	- Feeling low today, not like to go to office and something is missing, there is  original motivation to attend.
