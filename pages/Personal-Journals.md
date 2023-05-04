@@ -1,7 +1,7 @@
 - [[May 4th, 2023]]
 	- Yes was well spent day with family, good time time spent. should take time to take this. Waking early in the morning really helps in completing certain tasks. i should plan more of it, I am spending more time on the searching monitor for me and it wasting time on it.
 	- I should be spending more time in developing codes and implement things and spending the time learning new things and focus on building new things.
-	- I also feel i dont have any clue moving
+	- I also feel i do not have any clue moving forward and not building any relationship. should get some career counselor or someone to who can help in getting things done.
 - [[May 3rd, 2023]]
 	- I was thinking to switch a job but meanwhile, but Tridiv request more towards my growth. can I take this up and pursue further what are the grantees how to grow my career ladder if I have multiple teams under me and managing big chunk of it. should take the #Tridiv propsal or should go with new opportunities.
 	- Whatever the efforts are steps i take in next few months is going to be defining moment in my career i feel. either work full commitment and more forward
