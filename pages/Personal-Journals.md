@@ -1,3 +1,5 @@
+alias::
+
 - [[May 4th, 2023]]
 	- Yes was well spent day with family, good time time spent. should take time to take this. Waking early in the morning really helps in completing certain tasks. i should plan more of it, I am spending more time on the searching monitor for me and it wasting time on it.
 	- I should be spending more time in developing codes and implement things and spending the time learning new things and focus on building new things.
