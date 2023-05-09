@@ -1,2 +1,3 @@
 - write 3 good things happened to me in last 24 hours
-- write a unde
+- write a un send letter for some someone
+- write a letter about person who helped and read it to them this helps a lot.
