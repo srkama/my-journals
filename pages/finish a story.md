@@ -1,1 +1,3 @@
-- step 1: write the curr
+- step 1: describe the current situation / problem
+- step 2: explore all different options
+- step 3: choose few apealing
