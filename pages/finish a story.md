@@ -1,3 +1,3 @@
 - step 1: describe the current situation / problem
 - step 2: explore all different options
-- step 3: choose few apealing
+- step 3: choose few appealing options and divide deeper into it.
