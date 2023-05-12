@@ -1,1 +1,6 @@
--
+- Goal - able to develop a app in flutter and debug any issues
+- implement different features
+	- animation
+	- data access from restflu services
+	- responsive desing
+	-
